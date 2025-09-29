@@ -1,0 +1,33 @@
+name: Update EPG Data
+
+on:
+  schedule:
+    # Runs every 12 hours (at midnight and noon UTC)
+    - cron: '0 * * * *'
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  update-epg:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run EPG processing script
+        run: node scripts/process-epg.js
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name 'GitHub Actions Bot'
+          git config --global user.email 'actions@github.com'
+          git add .
+          git diff --staged --quiet || (git commit -m 'Update EPG data' && git push)
