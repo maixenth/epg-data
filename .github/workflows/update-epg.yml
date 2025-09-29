@@ -23,12 +23,20 @@ jobs:
         run: npm install
 
       - name: Run EPG grabber
-        run: npm run grab -- --site=xmltv.fr --output=guide.xml
+        run: npm run grab
+
+      - name: Generate API files
+        run: npm run api:generate
 
       - name: Commit and push changes
         run: |
           git config --global user.name 'GitHub Actions Bot'
           git config --global user.email 'actions@github.com'
           git add .
-          git diff --staged --quiet || (git commit -m 'Update EPG data' && git push)
+          if ! git diff --staged --quiet; then
+            git commit -m 'Update EPG data'
+            git push
+          else
+            echo "No changes to commit"
+          fi
 
