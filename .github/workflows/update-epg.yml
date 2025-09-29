@@ -29,5 +29,16 @@ jobs:
         run: |
           git config --global user.name 'GitHub Actions Bot'
           git config --global user.email 'actions@github.com'
-          git add .
-          git diff --staged --quiet || (git commit -m 'Update EPG data' && git push)
+          git add public/
+          if ! git diff --staged --quiet; then
+            git commit -m 'Update EPG data'
+            git push
+          else
+            echo "No changes to commit"
+          fi
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
